@@ -1,0 +1,99 @@
+@startuml StudyBuddy
+skinparam classAttributeIconSize 0
+
+enum Status {
+  TE_DOEN
+  BEZIG
+  AFGEROND
+}
+
+class Student {
+  -id: int
+  -naam: String
+  -email: String
+  -wachtwoord: String
+  +registreer(naam: String, email: String, wachtwoord: String): void
+  +aanmelden(email: String, wachtwoord: String): boolean
+  +voegVakToe(vak: Vak): void
+  +maakStudiegroepAan(naam: String): Studiegroep
+  +sluitAanBijGroep(groep: Studiegroep): void
+  +sluitAanBijSessie(sessie: Studiesessie): void
+  +bekijkVoortgang(vak: Vak): double
+}
+
+class Vak {
+  -id: int
+  -naam: String
+  +getTaken(): List<Taak>
+  +getTesten(): List<Test>
+}
+
+abstract class Opdracht {
+  -id: int
+  -titel: String
+  -beschrijving: String
+  -datum: LocalDate
+  +getVoortgang(student: Student): Status
+}
+
+class Taak {
+  -deadline: LocalDate
+}
+
+class Test {
+  -testdatum: LocalDate
+  -maxScore: double
+}
+
+class Voortgang {
+  -status: Status
+  -score: double
+  +updateStatus(status: Status): void
+}
+
+class Studiegroep {
+  -id: int
+  -naam: String
+  -beschrijving: String
+  +voegLidToe(student: Student): void
+  +verwijderLid(student: Student): void
+  +planSessie(datum: LocalDateTime, locatie: String): Studiesessie
+}
+
+class Studiesessie {
+  -id: int
+  -datum: LocalDateTime
+  -locatie: String
+  +voegDeelnemerToe(student: Student): void
+  +deelDocument(doc: Document): void
+}
+
+class Document {
+  -id: int
+  -titel: String
+  -bestandspad: String
+  -type: String
+  -uploadDatum: LocalDateTime
+}
+
+' Overerving
+Opdracht <|-- Taak
+Opdracht <|-- Test
+
+' Relaties
+Student "0..*" o-- "0..*" Vak : volgt >
+Vak "1" *-- "0..*" Opdracht : bevat >
+
+Student "1" -- "0..*" Voortgang
+Opdracht "1" -- "0..*" Voortgang
+(Student, Opdracht) .. Voortgang
+
+Studiegroep "1..*" o-- "1..*" Student : leden
+Student "1" -- "0..*" Studiegroep : richt op >
+
+Studiegroep "1" *-- "0..*" Studiesessie : plant >
+Studiesessie "0..*" o-- "0..*" Student : deelnemers
+Studiesessie "1" *-- "0..*" Document : bevat >
+Student "1" -- "0..*" Document : deelt >
+
+@enduml

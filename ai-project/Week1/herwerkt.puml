@@ -1,0 +1,109 @@
+@startuml StudyBuddy
+skinparam classAttributeIconSize 0
+
+enum Status {
+  TE_DOEN
+  BEZIG
+  AFGEROND
+}
+
+enum DocumentType {
+  SAMENVATTING
+  DOCUMENT
+}
+
+class AccountService {
+  +registreer(naam: String, email: String, wachtwoord: String): Student
+  +aanmelden(email: String, wachtwoord: String): Student
+}
+
+class Student {
+  -id: int
+  -naam: String
+  -email: String
+  -wachtwoord: String
+  +voegVakToe(vak: Vak): void
+  +richtStudiegroepOp(naam: String): Studiegroep
+  +sluitAanBijGroep(groep: Studiegroep): void
+  +sluitAanBijSessie(sessie: Studiesessie): void
+  +bekijkVoortgang(opdracht: Opdracht): Status
+}
+
+class Vak {
+  -id: int
+  -naam: String
+  +getOpdrachten(): List<Opdracht>
+}
+
+abstract class Opdracht {
+  -id: int
+  -titel: String
+  -beschrijving: String
+  -datum: LocalDate
+}
+
+class Taak {
+}
+
+class Test {
+  -maxScore: double
+}
+
+class Voortgang {
+  -status: Status
+  -score: double
+  +updateStatus(status: Status): void
+}
+
+class Studiegroep {
+  -id: int
+  -naam: String
+  -beschrijving: String
+  +voegLidToe(student: Student): void
+  +verwijderLid(student: Student): void
+  +planSessie(datum: LocalDateTime, locatie: String, opdracht: Opdracht): Studiesessie
+}
+
+class Studiesessie {
+  -id: int
+  -datum: LocalDateTime
+  -locatie: String
+  +voegDeelnemerToe(student: Student): void
+  +deelDocument(doc: Document): void
+}
+
+class Document {
+  -id: int
+  -titel: String
+  -bestandspad: String
+  -type: DocumentType
+  -uploadDatum: LocalDateTime
+}
+
+' Overerving
+Opdracht <|-- Taak
+Opdracht <|-- Test
+
+' Account
+AccountService ..> Student : maakt aan >
+
+' Vakken en opdrachten
+Student "0..*" -- "0..*" Vak : volgt >
+Vak "1" *-- "0..*" Opdracht : bevat >
+
+' Voortgang als associatieklasse
+Student "0..*" -- "0..*" Opdracht
+(Student, Opdracht) .. Voortgang
+
+' Studiegroepen
+Studiegroep "0..*" o-- "1..*" Student : leden
+Studiegroep "0..*" --> "1" Student : oprichter
+
+' Studiesessies
+Studiegroep "1" *-- "0..*" Studiesessie : plant >
+Studiesessie "0..*" --> "1" Opdracht : voor >
+Studiesessie "0..*" -- "0..*" Student : deelnemers
+Studiesessie "1" *-- "0..*" Document : bevat >
+Document "0..*" --> "1" Student : gedeeld door >
+
+@enduml
