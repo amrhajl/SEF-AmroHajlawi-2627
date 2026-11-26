@@ -86,4 +86,18 @@ class StudiesessieTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> sessie.deelDocument(null));
     }
+
+    @Test
+    void voegDeelnemerToe_sessieIsVol_gooitException() {
+        // Arrange
+        Opdracht opdracht = new Taak("UML-diagram", "Klassendiagram tekenen", LocalDate.of(2026, 3, 20));
+        Studiesessie sessieMetMaximumDrie = new Studiesessie(LocalDateTime.of(2026, 3, 10, 14, 0), "Lokaal B201", opdracht, 3);
+        sessieMetMaximumDrie.voegDeelnemerToe(new Student("Anna", "anna@student.odisee.be", "pw1"));
+        sessieMetMaximumDrie.voegDeelnemerToe(new Student("Bram", "bram@student.odisee.be", "pw2"));
+        sessieMetMaximumDrie.voegDeelnemerToe(new Student("Cleo", "cleo@student.odisee.be", "pw3"));
+        Student vierdeStudent = new Student("Dirk", "dirk@student.odisee.be", "pw4");
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, () -> sessieMetMaximumDrie.voegDeelnemerToe(vierdeStudent));
+    }
 }

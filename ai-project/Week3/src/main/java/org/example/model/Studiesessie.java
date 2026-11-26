@@ -23,7 +23,11 @@ public class Studiesessie {
         this.opdracht = opdracht;
     }
 
-    // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
+    // STUB (TDD, rode stap): nog geen maximum, enkel zodat de test compileert
+    public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht, int maximum) {
+        this(datum, locatie, opdracht);
+    }
+
     // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
     public void voegDeelnemerToe(Student student) {
         if (student == null) {
