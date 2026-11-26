@@ -8,7 +8,7 @@ AccountService, Studiegroep, Studiesessie en Voortgang.
 
 De domeinklassen staan in src/main/java/org/example/model, lees ze zelf. Zet de tests in
 src/test/java/org/example/model, één testklasse per klasse. Voeg junit-jupiter en
-junit-jupiter-params toe aan de pom.xml (JDK 27, Maven van IntelliJ).
+junit-jupiter-params toe aan de pom.xml (Maven van IntelliJ).
 Pas de productiecode NIET aan.
 
 Belangrijk: ik heb zelf een testcase-tabel gemaakt op basis van mijn user stories. Die
@@ -105,22 +105,83 @@ FACTEN:
 - De meeste asserts controleren toestand of exception (assertThrows, assertEquals).
 - Sommige tests lezen interne lijsten via getLeden(), getSessies(), getDeelnemers().
 - planSessie_geldigeGegevens heeft 4 asserts in één test (assertAll).
-  
+
+OORDEEL:
+Meestal testen de asserts gedrag (toestand of exception). Zwakke punten: sommige tests lezen interne lijsten via `getLeden()`, `getSessies()` en `getDeelnemers()`, en `planSessie_geldigeGegevens` heeft 4 asserts in één test, terwijl één test één idee hoort te hebben.
 
 ### Naamgeving en structuur (AAA)
 FACTEN:
 - Alle tests volgen methode_scenario_verwachting.
 - Alle tests hebben de commentaren Arrange, Act en Assert.
 - updateStatus_null_behoudtVorigeStatus gebruikt een try/catch in de Act.
- 
+- OORDEEL:
+  De naamgeving en de AAA-structuur zijn goed en consequent. Het enige probleem is `updateStatus_null_behoudtVorigeStatus`: de try/catch in de Act maakt de test onduidelijk, want Act en Assert lopen door elkaar.
 ### Ontbrekende scenario's
 FACTEN:
 - Alle scenario's uit mijn tabel hebben een test.
+- OORDEEL:
+  Alle scenario's uit mijn tabel hebben een test, omdat ik de tabel meegaf in de prompt. Scenario's die niet in de tabel stonden, kon AI niet bedenken. Daarom voegde ik later het maximum aantal deelnemers toe via TDD.
   
 
 ### Mocks gebruikt waar een echt object volstond, of omgekeerd
 - Er zijn geen mocks gebruikt. Dat klopt, want de klassen hebben geen externe afhankelijkheden
   (repository of mail-service). Alle tests gebruiken echte domeinobjecten.
-
+- OORDEEL:
+  Dat er geen mocks zijn, is correct. De klassen hebben geen externe afhankelijkheden, dus echte objecten volstaan en Mockito zou hier enkel ruis geven.
 ### Bugs fixen
 - De meeste errors kwamen door dat null aanvaard was, dus we hebben een IllegalArgumentException gevoegd aan de klasse.
+
+### prompt1: rood
+
+Ik bouw met TDD een nieuwe regel in mijn Java-project StudyBuddy (JUnit 6, package org.example.model): een Studiesessie kan een maximum aantal deelnemers hebben. Hieronder staat mijn testcase-tabel en de huidige klasse Studiesessie.
+
+Schrijf enkel de test voor de eerste rij van de tabel (sessie vol, vierde student, IllegalStateException). Schrijf nog GEEN productiecode.
+- Naamgeving: methode_scenario_verwachting
+- Structuur: Arrange, Act, Assert
+- Geen echte datum of tijd, gebruik vaste waarden
+
+Zeg erbij waarom de test nu moet falen (en dat het om de juiste reden is, niet door een compilatiefout van iets anders).
+
+### prompt2: groen
+
+De test faalt nu zoals verwacht. 
+Schrijf net genoeg productiecode in Studiesessie om deze test te laten slagen, en niet meer. 
+Voeg geen extra functionaliteit toe die niet door een test gevraagd wordt. Leg kort uit wat je veranderd hebt.
+
+### Prompt 3: refactor
+
+De test is groen. Verbeter de code zonder het gedrag te veranderen (bv. duidelijke namen, geen dubbele code,
+een kleine hulpmethode). 
+Alle tests moeten groen blijven. 
+Leg per wijziging kort uit waarom.
+
+Gebruikte ik de testcase-tabel in de prompt? Ja, de tabel stond in de eerste prompt (voor de tests) en de tabel voor story 9 hoorde bij de TDD-prompts.
+
+Cyclus 2 en 3 deed ik stap per stap met hulp van Claude in de chat, zonder vaste prompt per stap.
+
+### Verloop van de cycli
+| Cyclus | Rood (falende test) | Groen (minimale code) | Refactor |
+|---|---|---|---|
+| 1 | `voegDeelnemerToe_sessieIsVol_gooitException` | Constructor met `maximum`, `IllegalStateException` bij vol | Constante `GEEN_MAXIMUM` i.p.v. `Integer.MAX_VALUE` |
+| 2 | `voegDeelnemerToe_sessieVolEnStudentIsAlDeelnemer_voegtGeenDubbeleToe` faalde met `De sessie is vol` | Eerst `contains` controleren, dan `isVol` | Hulpmethode `isVol()` |
+| 3 | `constructor_ongeldigMaximum_gooitException` (0 en -1) | `maximum <= 0` gooit `IllegalArgumentException` | Controle in `controleerMaximum()` |
+
+De grenstest `voegDeelnemerToe_derdeStudentBijMaximumDrie_wordtToegelaten` was meteen groen, want de code kon dit al. Ik voegde hem toch toe om de grens (precies 3 van 3) vast te leggen.
+
+Wat goed ging: de rode test faalde telkens om de juiste reden, en bij de refactor bleven alle tests groen.
+Wat lastig was: een test belandde eerst per ongeluk in de productieklasse, en een test belandde binnen een andere test. Dat zag ik doordat het niet compileerde of niet draaide, en ik corrigeerde het.
+
+## Mutatietesten
+
+Ik brak de productiecode (`Studiesessie.java`) op 3 plaatsen en draaide telkens alle tests. Daarna draaide ik de mutatie terug met Git Rollback. Mutaties zijn niet gecommit.
+
+| # | Mutatie | Resultaat | Test die rood werd |
+|---|---|---|---|
+| 1 | In `isVol()` `>=` vervangen door `>` | Gedood | `voegDeelnemerToe_sessieIsVol_gooitException` |
+| 2 | Null-controle in `voegDeelnemerToe` in commentaar gezet | Gedood | `voegDeelnemerToe_nullStudent_gooitException` |
+| 3 | Dubbel-controle (`contains` + `return`) in commentaar gezet | Gedood | `voegDeelnemerToe_bestaandeDeelnemer_voegtGeenDubbeleToe` en `voegDeelnemerToe_sessieVolEnStudentIsAlDeelnemer_voegtGeenDubbeleToe` |
+
+
+## Dekking
+
+Ik heb de dekking niet gemeten met JaCoCo.
