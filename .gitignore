@@ -1,12 +1,20 @@
-  # Gecompileerde/gegenereerde bestanden
-   __pycache__/
-   *.pyc
-   # Virtuele omgeving
-   venv/
-   # Geheimen / configuratie
-   .env
-   # IDE-instellingen
-   .vscode/
-   .idea/
-   # Systeembestanden
-   .DS_Store
+# Gecompileerde/gegenereerde bestanden
+__pycache__/
+*.pyc
+
+# Virtuele omgeving
+venv/
+
+# Geheimen / configuratie
+.env
+
+# IDE-instellingen
+.vscode/
+.idea/
+
+# Systeembestanden
+.DS_Store
+
+# Java / Maven
+target/
+*.class
