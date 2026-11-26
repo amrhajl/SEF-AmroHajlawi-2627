@@ -12,26 +12,31 @@ public class Studiesessie {
     private final LocalDateTime datum;
     private final String locatie;
     private final Opdracht opdracht;
+    private final int maximum;
     private final List<Student> deelnemers = new ArrayList<>();
     private final List<Document> documenten = new ArrayList<>();
 
+    // Zonder maximum: er is geen limiet op het aantal deelnemers
     public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht) {
+        this(datum, locatie, opdracht, Integer.MAX_VALUE);
+    }
+
+    public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht, int maximum) {
         this.id = volgendeId;
         volgendeId++;
         this.datum = datum;
         this.locatie = locatie;
         this.opdracht = opdracht;
-    }
-
-    // STUB (TDD, rode stap): nog geen maximum, enkel zodat de test compileert
-    public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht, int maximum) {
-        this(datum, locatie, opdracht);
+        this.maximum = maximum;
     }
 
     // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
     public void voegDeelnemerToe(Student student) {
         if (student == null) {
             throw new IllegalArgumentException("Student mag niet null zijn");
+        }
+        if (deelnemers.size() >= maximum) {
+            throw new IllegalStateException("De sessie is vol");
         }
         if (!deelnemers.contains(student)) {
             deelnemers.add(student);
