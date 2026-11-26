@@ -48,3 +48,18 @@
 | 7 | updateStatus | `null` | IllegalArgumentException, status blijft |
 | 7 | updateScore | 0.0 (op de grens) en 15.5 | score aangepast |
 | 7 | updateScore | -0.1 (net onder de grens) | IllegalArgumentException |
+
+## Nieuwe feature (TDD): maximum aantal deelnemers per studiesessie
+
+User story 9: *Als groepslid wil ik aansluiten bij een studiesessie, zodat anderen weten dat ik erbij ben.*
+Het maximum is geen aparte user story, maar een extra regel bij story 9. In de tests is het maximum 3.
+De bestaande constructor zonder maximum blijft bestaan (geen maximum).
+
+| Story | Klasse | Methode | Scenario | Verwacht gedrag |
+|---|---|---|---|---|
+| 9 (extra regel) | Studiesessie | voegDeelnemerToe | 1 deelnemer, maximum 3 (net onder het maximum na toevoegen) | student wordt toegevoegd (2 deelnemers) |
+| 9 (extra regel) | Studiesessie | voegDeelnemerToe | 2 deelnemers, maximum 3 (op het maximum na toevoegen) | student wordt toegevoegd (3 deelnemers) |
+| 9 (extra regel) | Studiesessie | voegDeelnemerToe | 3 deelnemers, maximum 3 (net boven het maximum) | IllegalStateException, 3 deelnemers blijven |
+| 9 (extra regel) | Studiesessie | voegDeelnemerToe | sessie vol, student is al deelnemer | geen exception, geen dubbele (3 deelnemers) |
+| 9 (extra regel) | Studiesessie | constructor met maximum | maximum 0 | IllegalArgumentException |
+| 9 (extra regel) | Studiesessie | constructor met maximum | maximum -1 | IllegalArgumentException |
