@@ -34,16 +34,18 @@ public class Studiesessie {
     }
 
     // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
+    // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
     public void voegDeelnemerToe(Student student) {
         if (student == null) {
             throw new IllegalArgumentException("Student mag niet null zijn");
         }
+        if (deelnemers.contains(student)) {
+            return;
+        }
         if (deelnemers.size() >= maximum) {
             throw new IllegalStateException("De sessie is vol");
         }
-        if (!deelnemers.contains(student)) {
-            deelnemers.add(student);
-        }
+        deelnemers.add(student);
     }
 
     public void deelDocument(Document doc) {
