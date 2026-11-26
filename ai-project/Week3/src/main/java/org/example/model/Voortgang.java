@@ -8,6 +8,12 @@ public class Voortgang {
     private double score;
 
     public Voortgang(Student student, Opdracht opdracht) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student mag niet null zijn");
+        }
+        if (opdracht == null) {
+            throw new IllegalArgumentException("Opdracht mag niet null zijn");
+        }
         this.student = student;
         this.opdracht = opdracht;
         this.status = Status.TE_DOEN;
@@ -22,10 +28,10 @@ public class Voortgang {
         this.status = status;
     }
 
-    // Past de score aan
+    // Past de score aan (NaN en negatieve waarden zijn niet toegelaten)
     public void updateScore(double score) {
-        if (score < 0) {
-            throw new IllegalArgumentException("Score mag niet negatief zijn");
+        if (Double.isNaN(score) || score < 0) {
+            throw new IllegalArgumentException("Score moet een getal van minstens 0 zijn");
         }
         this.score = score;
     }

@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Studiesessie {
@@ -40,8 +41,6 @@ public class Studiesessie {
         }
     }
 
-    // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
-    // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
     // Voegt een deelnemer toe, tenzij de sessie vol is (een bestaande deelnemer wordt nooit geweigerd)
     public void voegDeelnemerToe(Student student) {
         if (student == null) {
@@ -59,6 +58,7 @@ public class Studiesessie {
     private boolean isVol() {
         return deelnemers.size() >= maximum;
     }
+
     public void deelDocument(Document doc) {
         // Het diagram geeft het Document mee als parameter, dus het wordt hier
         // enkel toegevoegd aan de lijst van de sessie
@@ -74,8 +74,10 @@ public class Studiesessie {
     public LocalDateTime getDatum() { return datum; }
     public String getLocatie() { return locatie; }
     public Opdracht getOpdracht() { return opdracht; }
-    public List<Student> getDeelnemers() { return deelnemers; }
-    public List<Document> getDocumenten() { return documenten; }
+
+    // Niet-aanpasbare weergave: wijzigen kan enkel via voegDeelnemerToe / deelDocument
+    public List<Student> getDeelnemers() { return Collections.unmodifiableList(deelnemers); }
+    public List<Document> getDocumenten() { return Collections.unmodifiableList(documenten); }
 
     @Override
     public String toString() {

@@ -2,10 +2,10 @@ package org.example.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Studiegroep {
-    // Teller die telkens met 1 omhoog gaat zodat elke groep een uniek id krijgt
     private static int volgendeId = 1;
 
     private final int id;
@@ -18,16 +18,21 @@ public class Studiegroep {
     private final List<Studiesessie> sessies = new ArrayList<>();
 
     public Studiegroep(String naam, String beschrijving, Student oprichter) {
+        if (naam == null || naam.isBlank()) {
+            throw new IllegalArgumentException("Naam mag niet leeg zijn");
+        }
+        if (oprichter == null) {
+            throw new IllegalArgumentException("Oprichter mag niet null zijn");
+        }
         this.id = volgendeId;
         volgendeId++;
-        this.naam = naam;
+        this.naam = naam.trim();
         this.beschrijving = beschrijving;
         this.oprichter = oprichter;
-        // Multipliciteit 1..* : de oprichter is meteen het eerste lid
+        // Multipliciteit 1..*: de oprichter is meteen het eerste lid
         this.leden.add(oprichter);
     }
 
-    // Voegt een lid toe, maar enkel als het nog geen lid is
     // Voegt een lid toe, maar enkel als het nog geen lid is
     public void voegLidToe(Student student) {
         if (student == null) {
@@ -38,29 +43,26 @@ public class Studiegroep {
         }
     }
 
+    // De oprichter blijft altijd lid (1..*), dus die wordt nooit verwijderd
     public void verwijderLid(Student student) {
-        // Een groep moet minstens 1 lid hebben (1..*), dus het laatste lid
-        // en de oprichter laten we niet verwijderen
-        if (student == oprichter || leden.size() <= 1) {
+        if (oprichter.equals(student)) {
             return;
-        } else {
-            leden.remove(student);
         }
+        leden.remove(student);
     }
 
-    // De groep maakt de sessie zelf aan en bewaart ze
     // De groep maakt de sessie zelf aan en bewaart ze
     public Studiesessie planSessie(LocalDateTime datum, String locatie, Opdracht opdracht) {
         if (datum == null) {
             throw new IllegalArgumentException("Datum mag niet null zijn");
         }
-        if (locatie == null || locatie.trim().isEmpty()) {
+        if (locatie == null || locatie.isBlank()) {
             throw new IllegalArgumentException("Locatie mag niet leeg zijn");
         }
         if (opdracht == null) {
             throw new IllegalArgumentException("Opdracht mag niet null zijn");
         }
-        Studiesessie sessie = new Studiesessie(datum, locatie, opdracht);
+        Studiesessie sessie = new Studiesessie(datum, locatie.trim(), opdracht);
         sessies.add(sessie);
         return sessie;
     }
@@ -69,8 +71,10 @@ public class Studiegroep {
     public String getNaam() { return naam; }
     public String getBeschrijving() { return beschrijving; }
     public Student getOprichter() { return oprichter; }
-    public List<Student> getLeden() { return leden; }
-    public List<Studiesessie> getSessies() { return sessies; }
+
+    // Niet-aanpasbare weergave: wijzigen kan enkel via voegLidToe / verwijderLid
+    public List<Student> getLeden() { return Collections.unmodifiableList(leden); }
+    public List<Studiesessie> getSessies() { return Collections.unmodifiableList(sessies); }
 
     @Override
     public String toString() {
