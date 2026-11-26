@@ -8,6 +8,9 @@ public class Studiesessie {
     // Teller die telkens met 1 omhoog gaat zodat elke sessie een uniek id krijgt
     private static int volgendeId = 1;
 
+    // Betekent: geen limiet op het aantal deelnemers
+    private static final int GEEN_MAXIMUM = Integer.MAX_VALUE;
+
     private final int id;
     private final LocalDateTime datum;
     private final String locatie;
@@ -18,7 +21,7 @@ public class Studiesessie {
 
     // Zonder maximum: er is geen limiet op het aantal deelnemers
     public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht) {
-        this(datum, locatie, opdracht, Integer.MAX_VALUE);
+        this(datum, locatie, opdracht, GEEN_MAXIMUM);
     }
 
     public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht, int maximum) {
