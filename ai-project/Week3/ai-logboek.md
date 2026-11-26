@@ -192,6 +192,14 @@ Na de eerste fixes heb ik de productiecode nog verbeterd, samen met AI (Claude).
 | `Studiesessie` | `getDeelnemers()` en `getDocumenten()` geven een niet-aanpasbare lijst terug. De constructor zonder maximum liet ik bewust ongewijzigd. |
 | `Voortgang` | Constructor controleert `student` en `opdracht`, `updateScore` weigert ook `NaN` |
 
+## Herwerkte test
+
+De originele AI-tests staan ongewijzigd in `originele-tests/`. De herwerkte suite staat in `src/test/java`.
+
+**`updateStatus_null_behoudtVorigeStatus` (VoortgangTest)**
+
+- Wat er mis was: de Act zat in een try/catch. Als `updateStatus(null)` geen exception gooide, werd de catch gewoon overgeslagen en bleef de test groen. De test kon dus slagen zonder de `null`-controle echt te testen.
+- Wat ik veranderde: de try/catch vervangen door `assertThrows(...)` in de Act, gevolgd door een assert op de status. De test faalt nu ook als er geen exception komt.
 
 ## Dekking
 
