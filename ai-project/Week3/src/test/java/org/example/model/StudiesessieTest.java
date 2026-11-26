@@ -100,4 +100,21 @@ class StudiesessieTest {
         // Act + Assert
         assertThrows(IllegalStateException.class, () -> sessieMetMaximumDrie.voegDeelnemerToe(vierdeStudent));
     }
+
+    @Test
+    void voegDeelnemerToe_sessieVolEnStudentIsAlDeelnemer_voegtGeenDubbeleToe() {
+        // Arrange
+        Opdracht opdracht = new Taak("UML-diagram", "Klassendiagram tekenen", LocalDate.of(2026, 3, 20));
+        Studiesessie sessieMetMaximumDrie = new Studiesessie(LocalDateTime.of(2026, 3, 10, 14, 0), "Lokaal B201", opdracht, 3);
+        Student anna = new Student("Anna", "anna@student.odisee.be", "pw1");
+        sessieMetMaximumDrie.voegDeelnemerToe(anna);
+        sessieMetMaximumDrie.voegDeelnemerToe(new Student("Bram", "bram@student.odisee.be", "pw2"));
+        sessieMetMaximumDrie.voegDeelnemerToe(new Student("Cleo", "cleo@student.odisee.be", "pw3"));
+
+        // Act
+        sessieMetMaximumDrie.voegDeelnemerToe(anna);
+
+        // Assert
+        assertEquals(3, sessieMetMaximumDrie.getDeelnemers().size());
+    }
 }
