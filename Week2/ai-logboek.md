@@ -8,6 +8,7 @@ Claude AI
 
 ## Prompt 1: domeincode genereren
 
+```text
 Schrijf de domeincode in Java voor dit klassendiagram
 Regels:
 - 1 bestand per klasse, abstracte klasse en enum.
@@ -128,13 +129,14 @@ Studiesessie "1" *-- "0..*" Document : bevat >
 Document "0..*" --> "1" Student : gedeeld door >
 
 @enduml]
+```
 
 ## Resultaat
-Claude gaf 12 Java-bestanden, één per klasse:
+Claude gaf 11 Java-bestanden, één per klasse (zie `origineel/`):
 - Enums: `Status`, `DocumentType`
 - Abstracte klasse: `Opdracht` met subklassen `Taak` en `Test`
-- Overige klassen: `AccountService`, `Student`, `Vak`, `Voortgang`, `Studiegroep`, `Studiesessie`, `Document`
-
+- Overige klassen: `AccountService`, `Student`, `Vak`, `Voortgang`, `Studiegroep`, `Studiesessie`
+- `Document` ontbrak (zie verder)
 
 Keuzes van de AI:
 - Id's worden gegenereerd met een static teller per klasse.
@@ -146,16 +148,18 @@ Keuzes van de AI:
 
 ### Zijn er SOLID-schendingen?
 Bijna niet. Elke klasse doet één ding, en `Taak` en `Test` kunnen overal gebruikt worden waar een `Opdracht` verwacht wordt. Twee kleine dingen:
-- `AccountService` doet wat meer dan de andere klassen (registreren, aanmelden én het wachtwoord hashen). Voor dit project is dat prima.
+- `AccountService` doet wat meer dan de andere klassen (registreren, aanmelden én het wachtwoord hashen). We houden dat zo omdat het hashen maar één korte hulpmethode is; groeit dat, dan hoort het in een aparte klasse.
 - `Vak` heeft aparte methodes voor een taak en een test. Komt er een nieuw soort opdracht bij, dan moet `Vak` ook aangepast worden. Dat komt door de compositie in het diagram.
 
 ### Zitten de attributen en methodes in de juiste klasse?
-Ja. Een groep beheert zijn eigen leden en sessies, een sessie zijn deelnemers en documenten, en een vak zijn opdrachten. Eén opmerking: `bekijkVoortgang` in `Student` maakt een `Voortgang` aan als die nog niet bestaat. Dat is een beetje vreemd voor een "bekijk"-methode, maar zo blijft alles in `Student`.
+Ja. Een groep beheert haar eigen leden en sessies, een sessie zijn deelnemers en documenten, en een vak zijn opdrachten. Eén opmerking: `bekijkVoortgang` in `Student` maakt een `Voortgang` aan als die nog niet bestaat. Dat is een beetje vreemd voor een "bekijk"-methode, maar zo blijft alles in `Student`.
 
 ### Komt de code overeen met het klassendiagram?
 Grotendeels wel. Dit is anders of extra:
 - De AI vergat `Document`. Die klasse hebben we zelf gemaakt.
 - Getters en id's (met een teller) staan niet in het diagram, maar waren nodig.
+- `AccountService` bewaart een lijst met studenten. Die staat niet in het diagram, maar is nodig om bij het aanmelden te kunnen zoeken.
+- De getters geven de interne lijsten terug, dus een lijst kan ook van buitenaf aangepast worden. Dat pakken we aan bij het testen (week 3).
 - `Vak` heeft extra methodes om taken en tests aan te maken, omdat bij compositie het geheel de delen zelf maakt.
 - `Voortgang` heeft een extra methode `updateScore`, anders bleef de score altijd 0.0.
 - `Studiegroep.verwijderLid` laat de oprichter en het laatste lid niet weg, vanwege `1..*`.
@@ -165,7 +169,7 @@ Grotendeels wel. Dit is anders of extra:
 
 ### Wat hebben we aangepast, en waarom?
 1. **`Document.java` gemaakt en een losse `ù-` bij `Taak` verwijderd.** Anders kon de code niet compileren.
-2. **Alle klassen in `org.example.model` gezet.** Zo staat het domein apart van `Main`.
+2. **De domeinklassen in `org.example.model` gezet**, zoals de opdracht vraagt.
 3. **`final` toegevoegd bij velden die nooit veranderen.** Build Project gaf er gele waarschuwingen voor. Bij `Voortgang` enkel bij `student` en `opdracht`, want `status` en `score` veranderen wel.
 4. **`toString()` toegevoegd.** Zo zie je bij het testen gewone tekst in plaats van een rare code. Het wachtwoord staat er bewust niet in.
 5. **`updateScore` toegevoegd.** Anders kon de score nooit veranderen.
@@ -173,7 +177,9 @@ Grotendeels wel. Dit is anders of extra:
     - Twee studenten met hetzelfde e-mailadres kunnen niet meer, want dan klopte het aanmelden niet.
     - Exceptions in plaats van `null`, want een exception kan je niet vergeten te controleren.
     - Het wachtwoord wordt niet in platte tekst bewaard. We gebruikten `hashCode()` omdat dat simpel is. Het is niet veilig genoeg voor een echte app, maar het toont het idee.
-### prompt voor aanpassingen:
+
+## Prompt 2: code laten nakijken
+```text
 Je bent een ervaren software-tester die code reviewt voor een studentenproject.
 
 Context:
@@ -194,5 +200,4 @@ Regels:
 - Hou het simpel: geen advanced niveau, geen externe libraries.
 - Leg bij elke aanpassing kort uit waarom je die doet.
 - Zet de volledige aangepaste code in één codeblok, met extra commentaar bij de wijzigingen.
-
-
+```
