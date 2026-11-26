@@ -24,7 +24,11 @@ public class Studiesessie {
     }
 
     // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
+    // Voegt een deelnemer toe, maar enkel als die nog niet meedoet
     public void voegDeelnemerToe(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student mag niet null zijn");
+        }
         if (!deelnemers.contains(student)) {
             deelnemers.add(student);
         }
@@ -33,7 +37,12 @@ public class Studiesessie {
     public void deelDocument(Document doc) {
         // Het diagram geeft het Document mee als parameter, dus het wordt hier
         // enkel toegevoegd aan de lijst van de sessie
-        documenten.add(doc);
+        if (doc == null) {
+            throw new IllegalArgumentException("Document mag niet null zijn");
+        }
+        if (!documenten.contains(doc)) {
+            documenten.add(doc);
+        }
     }
 
     public int getId() { return id; }

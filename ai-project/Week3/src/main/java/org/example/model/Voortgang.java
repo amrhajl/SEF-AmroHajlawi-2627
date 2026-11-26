@@ -16,11 +16,17 @@ public class Voortgang {
 
     // Past de status aan (bv. van TE_DOEN naar bezig of afgewerkt)
     public void updateStatus(Status status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Status mag niet null zijn");
+        }
         this.status = status;
     }
 
     // Past de score aan
     public void updateScore(double score) {
+        if (score < 0) {
+            throw new IllegalArgumentException("Score mag niet negatief zijn");
+        }
         this.score = score;
     }
 

@@ -28,7 +28,11 @@ public class Studiegroep {
     }
 
     // Voegt een lid toe, maar enkel als het nog geen lid is
+    // Voegt een lid toe, maar enkel als het nog geen lid is
     public void voegLidToe(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student mag niet null zijn");
+        }
         if (!leden.contains(student)) {
             leden.add(student);
         }
@@ -45,7 +49,17 @@ public class Studiegroep {
     }
 
     // De groep maakt de sessie zelf aan en bewaart ze
+    // De groep maakt de sessie zelf aan en bewaart ze
     public Studiesessie planSessie(LocalDateTime datum, String locatie, Opdracht opdracht) {
+        if (datum == null) {
+            throw new IllegalArgumentException("Datum mag niet null zijn");
+        }
+        if (locatie == null || locatie.trim().isEmpty()) {
+            throw new IllegalArgumentException("Locatie mag niet leeg zijn");
+        }
+        if (opdracht == null) {
+            throw new IllegalArgumentException("Opdracht mag niet null zijn");
+        }
         Studiesessie sessie = new Studiesessie(datum, locatie, opdracht);
         sessies.add(sessie);
         return sessie;
