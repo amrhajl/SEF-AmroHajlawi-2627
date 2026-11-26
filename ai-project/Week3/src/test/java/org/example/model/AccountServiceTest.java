@@ -1,6 +1,6 @@
 package org.example.model;
 
-import org.example.service.AccountService;
+import org.example.model.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
