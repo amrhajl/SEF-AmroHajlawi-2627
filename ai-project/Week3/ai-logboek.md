@@ -181,6 +181,17 @@ Ik brak de productiecode (`Studiesessie.java`) op 3 plaatsen en draaide telkens 
 | 2 | Null-controle in `voegDeelnemerToe` in commentaar gezet | Gedood | `voegDeelnemerToe_nullStudent_gooitException` |
 | 3 | Dubbel-controle (`contains` + `return`) in commentaar gezet | Gedood | `voegDeelnemerToe_bestaandeDeelnemer_voegtGeenDubbeleToe` en `voegDeelnemerToe_sessieVolEnStudentIsAlDeelnemer_voegtGeenDubbeleToe` |
 
+## Aanpassingen aan de productiecode na de tests
+
+Na de eerste fixes heb ik de productiecode nog verbeterd, samen met AI (Claude). Ik gaf aanwijzingen en bracht zelf een deel van de ideeën aan. AI schreef de code. Ik heb de aanpassingen niet alleen gemaakt.
+
+| Klasse | Aanpassing |
+|---|---|
+| `AccountService` | E-mails opgeslagen in een `Map` met kleine letters als sleutel, `trim()` op naam en e-mail, wachtwoord gehasht met SHA-256 in plaats van `hashCode()` |
+| `Studiegroep` | Constructor controleert `naam` en `oprichter`, `verwijderLid` vergelijkt met `equals`, `planSessie` gebruikt `isBlank()` en `trim()`, `getLeden()` en `getSessies()` geven een niet-aanpasbare lijst terug |
+| `Studiesessie` | `getDeelnemers()` en `getDocumenten()` geven een niet-aanpasbare lijst terug. De constructor zonder maximum liet ik bewust ongewijzigd. |
+| `Voortgang` | Constructor controleert `student` en `opdracht`, `updateScore` weigert ook `NaN` |
+
 
 ## Dekking
 
