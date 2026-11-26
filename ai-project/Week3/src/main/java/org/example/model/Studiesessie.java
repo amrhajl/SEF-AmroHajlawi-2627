@@ -25,6 +25,9 @@ public class Studiesessie {
     }
 
     public Studiesessie(LocalDateTime datum, String locatie, Opdracht opdracht, int maximum) {
+        if (maximum <= 0) {
+            throw new IllegalArgumentException("Het maximum moet minstens 1 zijn");
+        }
         this.id = volgendeId;
         volgendeId++;
         this.datum = datum;
