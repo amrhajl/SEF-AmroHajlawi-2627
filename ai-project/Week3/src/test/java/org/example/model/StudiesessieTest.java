@@ -10,6 +10,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class StudiesessieTest {
 
@@ -116,5 +118,18 @@ class StudiesessieTest {
 
         // Assert
         assertEquals(3, sessieMetMaximumDrie.getDeelnemers().size());
+        assertEquals(3, sessieMetMaximumDrie.getDeelnemers().size());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void constructor_ongeldigMaximum_gooitException(int ongeldigMaximum) {
+        // Arrange
+        Opdracht opdracht = new Taak("UML-diagram", "Klassendiagram tekenen", LocalDate.of(2026, 3, 20));
+        LocalDateTime datum = LocalDateTime.of(2026, 3, 10, 14, 0);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Studiesessie(datum, "Lokaal B201", opdracht, ongeldigMaximum));
     }
 }
