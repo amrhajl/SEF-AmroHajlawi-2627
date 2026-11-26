@@ -77,11 +77,7 @@ class VoortgangTest {
         voortgang.updateStatus(Status.BEZIG);
 
         // Act
-        try {
-            voortgang.updateStatus(null);
-        } catch (IllegalArgumentException verwacht) {
-            // De exception zelf wordt getest in updateStatus_null_gooitException
-        }
+        assertThrows(IllegalArgumentException.class, () -> voortgang.updateStatus(null));
 
         // Assert
         assertEquals(Status.BEZIG, voortgang.getStatus());
